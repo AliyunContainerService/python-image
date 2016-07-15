@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# A shell script to gen Dockerfile for ruby with taobao mirror.
+
+if [ $# -ne 0 ];then
+  echo No param allowed.
+fi
+
+create_dockerfile(){
+  filename=Dockerfile
+  cd $1
+  echo "FROM python:$1">>$filename 
+  echo "MAINTAINER Li Yi <denverdino@gmail.com>  snowdream <yanghui1986527@gmail.com>">>$filename  
+  echo "COPY sources.list /etc/apt/sources.list">>$filename  
+  echo "COPY pip.conf /root/.pip/pip.conf">>$filename  
+  echo "$1/$filename has been created." 
+  echo 
+  cd ..
+}
+
+create_pipconf(){
+  filename=pip.conf
+  cd $1
+  echo "[global]">>$filename 
+  echo "index-url = http://mirrors.aliyun.com/pypi/simple/">>$filename 
+  echo "">>$filename 
+  echo "[install]">>$filename 
+  echo "trusted-host=mirrors.aliyun.com">>$filename 
+  echo "$1/$filename has been created." 
+  cd ..
+}
+
+create_sourceslist(){
+  filename=sources.list
+  cd $1
+  echo "deb http://mirrors.aliyun.com/debian/ $2 main">>$filename 
+  echo "deb http://mirrors.aliyun.com/debian/ $2-updates main">>$filename 
+  echo "http://mirrors.aliyun.com/debian-security/ $2/updates main">>$filename 
+  echo "$1/$filename has been created." 
+  cd ..
+}
+
+declare -a PYTHON_VERSIONS=(
+              "2.7"
+              "3.4"
+              "3.5"
+              "3.6"
+              )
+
+declare -a OS_VERSIONS=(
+              "jessie"
+              "jessie"
+              "jessie"
+              "jessie"
+              )              
+
+length=${#PYTHON_VERSIONS[@]}
+
+for ((i=0;i<$length;i++)); do
+  python_version=${PYTHON_VERSIONS[$i]}
+  os_version=${OS_VERSIONS[$i]}
+
+  if [ ! -d ${python_version} ];then
+    mkdir ${python_version}
+    create_pipconf ${python_version}
+    create_sourceslist ${python_version} ${os_version}
+    create_dockerfile ${python_version}
+  fi
+done
