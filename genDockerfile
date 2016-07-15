@@ -35,7 +35,7 @@ create_sourceslist(){
   cd $1
   echo "deb http://mirrors.aliyun.com/debian/ $2 main">>$filename 
   echo "deb http://mirrors.aliyun.com/debian/ $2-updates main">>$filename 
-  echo "http://mirrors.aliyun.com/debian-security/ $2/updates main">>$filename 
+  echo "deb http://mirrors.aliyun.com/debian-security/ $2/updates main">>$filename 
   echo "$1/$filename has been created." 
   cd ..
 }
